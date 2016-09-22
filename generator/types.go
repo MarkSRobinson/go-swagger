@@ -97,6 +97,10 @@ var stringConverters = map[string]string{
 	"bool":    "swag.ConvertBool",
 	"float32": "swag.ConvertFloat32",
 	"float64": "swag.ConvertFloat64",
+	"strfmt.UUID5": "strfmt.UUID5",
+	"strfmt.UUID4": "strfmt.UUID4",
+	"strfmt.UUID3": "strfmt.UUID3",
+	"strfmt.UUID": "strfmt.UUID",
 }
 
 var stringFormatters = map[string]string{
@@ -111,6 +115,10 @@ var stringFormatters = map[string]string{
 	"bool":    "swag.FormatBool",
 	"float32": "swag.FormatFloat32",
 	"float64": "swag.FormatFloat64",
+	"strfmt.UUID5": "string",
+	"strfmt.UUID4": "string",
+	"strfmt.UUID3": "string",
+	"strfmt.UUID": "string",
 }
 
 // typeMapping contains a mapping of format or type name to go type
@@ -173,11 +181,16 @@ func simpleResolvedType(tn, fmt string, items *spec.Items) (result resolvedType)
 	result.SwaggerFormat = fmt
 	//_, result.IsPrimitive = primitives[tn]
 
+	//log.Printf("tn: %v fmt: %v", tn, fmt)
+
 	if fmt != "" {
 		fmtn := strings.Replace(fmt, "-", "", -1)
+		//log.Printf("typeMapping[fmtn]: %v ", typeMapping[fmtn])
 		if tpe, ok := typeMapping[fmtn]; ok {
 			result.GoType = tpe
-			result.IsPrimitive = true
+			//result.IsPrimitive = true
+			_, result.IsPrimitive = primitives[tpe]
+			//log.Printf("result.IsPrimitive: %v ", result.IsPrimitive)
 			_, result.IsCustomFormatter = customFormatters[tpe]
 			result.IsStream = fmt == binary
 			return
